@@ -5,38 +5,31 @@ export const getAll = async () => {
   return rows;
 };
 
-export const create = async () => {
-  if (!task || !task.trim() || !user || user <= 0) {
-    throw new Error('La tarea o el usuario no pueden estar vacíos');
-  }
-  const [result] = await pool.execute('INSERT INTO tasks (task, completed, user_id) VALUES (?, 0, ?)', [task.trim(), user]);
-  const [newTask] = await pool.execute('SELECT * FROM tasks WHERE id = ?', [result.insertId]);
-  return newTask[0];
+export const getById = async (id) => {
+  const [rows] = await pool.query('CALL pa_GetHorarioById(?)', [id]);  
+  return rows[0][0];
 };
 
-export const update = async (id, updates) => {
-  let query, params;
-  if (updates.task !== undefined) {  // 'tarea' -> 'task'
-    query = 'UPDATE tasks SET task = ? WHERE id = ?';
-    params = [updates.task, id];
-  } else if (updates.completed !== undefined) {  // 'completada' -> 'completed'
-    query = 'UPDATE tasks SET completed = ? WHERE id = ?';
-    params = [updates.completed ? 1 : 0, id];
-  } else {
-    throw new Error('Debe proporcionar "task" o "completed"');  // Ajusta mensaje
+export const create = async (schedule) => {
+  if (!schedule) {
+    throw new Error('El horario no puede estar vacío');
   }
-  const [result] = await pool.execute(query, params);
-  if (result.affectedRows === 0) {
-    throw new Error('Task not found');
+  const [result] = await pool.query('CALL pa_InsertHorario(?,?,?,?,?,?)', [schedule.aula_id, schedule.profesor_id, schedule.dia_semana, schedule.hora_inicio, schedule.hora_fin, schedule.curso]);
+  return { message: 'Horario agregado exitosamente' };
+};
+
+export const update = async (id, schedule) => {
+  if (!schedule) {
+    throw new Error('El horario no puede estar vacío');
   }
-  const [updated] = await pool.execute('SELECT * FROM tasks WHERE id = ?', [id]);
-  return updated[0];
+  const [result] = await pool.query('CALL pa_UpdateHorario(?,?,?,?,?,?)', [id, schedule.aula_id ?? null, schedule.profesor_id ?? null, schedule.dia_semana ?? null, schedule.hora_inicio ?? null, schedule.hora_fin ?? null]);
+  return { message: 'Horario actualizado exitosamente' };
 };
 
 export const deleteById = async (id) => {
-  const [result] = await pool.execute('DELETE FROM tasks WHERE id = ?', [id]);
+  const [result] = await pool.query('CALL pa_DeleteHorario(?)', [id]);
   if (result.affectedRows === 0) {
-    throw new Error('Task not found');
+    throw new Error('Horario no encontrado');
   }
-  return { message: 'Task deleted successfully' };
+  return { message: 'Horario eliminado exitosamente' };
 };
