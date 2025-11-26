@@ -1,26 +1,21 @@
 import pool from './db.js';
 
 export const getAll = async () => {
-  const [rows] = await pool.execute('CALL pa_getAllUsuarios()');
+  const [rows] = await pool.execute('SELECT * FROM vwGetAllUsuario');
   return rows;
 };
 
-export const create = async (name, email, passwordHash, role) => {
-  if (
-    !name?.trim() ||
-    !email?.trim() ||
-    !passwordHash?.trim() ||
-    !role?.trim()
-  ) {
-    throw new Error('Ningún campo puede estar vacío');
+export const getById = async (id) => {
+  const [rows] = await pool.query('CALL pa_GetUsuarioById(?)', [id]);  
+  return rows[0][0];
+};
+
+export const create = async (user) => {
+  if (!user) {
+    throw new Error('El usuario no puede estar vacío');
   }
-
-  const [result] = await pool.execute(
-    'CALL pa_createUsuario(?, ?, ?, ?)',
-    [name.trim(), email.trim(), passwordHash.trim(), role.trim()]
-  );
-
-  return result[0][0];
+  const [result] = await pool.query('CALL pa_InsertUsuario(?,?,?,?)', [user.name, user.email, user.password, user.role]);
+  return { message: 'Usuario agregado exitosamente' };
 };
 
 // export const update = async (id, updates) => {
@@ -51,7 +46,7 @@ export const create = async (name, email, passwordHash, role) => {
   if (!id) {
     throw new Error('El ID no puede estar vacío');
   }
-  const [result] = await pool.execute('CALL pa_deleteUsuario(?)', [id]);
+  const [result] = await pool.execute('CALL pa_DeleteUsuario(?)', [id]);
   return { message: 'User deleted successfully' };
 
 };

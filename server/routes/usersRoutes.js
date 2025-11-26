@@ -1,9 +1,9 @@
 import express from 'express';
-import * as usersService from '../services/usersService.js';
+import * as usersService from '../services/users.Service.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/all/', async (req, res) => {
   try {
     const users = await usersService.getAll();
     res.json(users);
@@ -13,12 +13,22 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  try {
+    const schedule = await usersService.getById(req.params.id);
+    res.status(200).json(schedule);
+  } catch (err) {
+    console.error('Error en consulta:', err);
+    res.status(500).json({ error: 'Error en la base de datos' });
+  }
+});
+
 router.post('/', async (req, res) => {
   try {
-    const newUser = await usersService.create(req.body.name, req.body.password);
+    const newUser = await usersService.create(req.body);
     res.status(201).json(newUser);
   } catch (err) {
-    if (err.message === 'El usuario no puede estar vacío' || err.message === 'The user cannot be empty') {
+    if (err.message === 'El usuario no puede estar vacío') {
       res.status(400).json({ error: err.message });
     } else {
       console.error('Error al insertar:', err);
