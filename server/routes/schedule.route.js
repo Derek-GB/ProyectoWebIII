@@ -1,5 +1,5 @@
 import express from 'express';
-import * as scheduleService from '../services/scheduleService.js';  
+import * as scheduleService from '../services/schedule.service.js';  
 
 const router = express.Router();
 
