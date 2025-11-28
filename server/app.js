@@ -4,6 +4,7 @@ import cors from 'cors';
 import tasksRoutes from './routes/tasksRoutes.js'; 
 import usersRoutes from './routes/usersRoutes.js';
 import scheduleRoutes from './routes/schedule.route.js';
+import teachersRoutes from './routes/teacher.route.js';
 import pool from './services/db.js';
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/schedule', scheduleRoutes);
+app.use('/api/teachers',teachersRoutes);
 
 // Probar conexión
 (async () => {
