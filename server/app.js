@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import tasksRoutes from './routes/tasksRoutes.js'; 
-import usersRoutes from './routes/usersRoutes.js';
+import usersRoutes from './routes/users.Routes.js';
 import scheduleRoutes from './routes/schedule.route.js';
 import teachersRoutes from './routes/teacher.route.js';
 import pool from './services/db.js';

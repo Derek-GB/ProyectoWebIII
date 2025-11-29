@@ -1,4 +1,5 @@
 import pool from './db.js';
+import bcrypt from 'bcrypt';
 
 export const getAll = async () => {
   const [rows] = await pool.execute('SELECT * FROM vwGetAllUsuario');
@@ -14,31 +15,59 @@ export const create = async (user) => {
   if (!user) {
     throw new Error('El usuario no puede estar vacío');
   }
-  const [result] = await pool.query('CALL pa_InsertUsuario(?,?,?,?)', [user.name, user.email, user.password, user.role]);
+
+  const hashedPassword = await bcrypt.hash(user.password, 10);
+
+  const [result] = await pool.query(
+    'CALL pa_InsertUsuario(?,?,?,?)',
+    [user.name, user.email, hashedPassword, user.role]
+  );
+
   return { message: 'Usuario agregado exitosamente' };
 };
 
-// export const update = async (id, updates) => {
-//   let query, params;
-//   if (updates.name !== undefined && updates.password !== undefined) {
-//     query = 'UPDATE users SET nombre = ?, contrasena = ? WHERE id = ?';
-//     params = [updates.name, updates.password, id];
-//   } else if (updates.name !== undefined) {
-//     query = 'UPDATE users SET nombre = ? WHERE id = ?';
-//     params = [updates.name, id];
-//   } else if (updates.password !== undefined) {
-//     query = 'UPDATE users SET contrasena = ? WHERE id = ?';
-//     params = [updates.password, id];
-//   } else {
-//     throw new Error('Debe proporcionar "name" o "password"');
-//   }
-//   const [result] = await pool.execute(query, params);
-//   if (result.affectedRows === 0) {
-//     throw new Error('User not found');
-//   }
-//   const [updated] = await pool.execute('SELECT * FROM users WHERE id = ?', [id]);
-//   return updated[0];
-// };
+export const validateCredentials = async (name, password) => {
+  const [rows] = await pool.execute(
+    'SELECT * FROM usuario WHERE nombre = ?',
+    [name]
+  );
+  if (rows.length === 0) return null;
+  const user = rows[0];
+  const valid = await bcrypt.compare(password, user.passwordHash);
+  if (!valid) return null;
+  delete user.passwordHash;
+  return user;
+};
+
+export const update = async (id, user) => {
+  if (!user) {
+    throw new Error('El usuario no puede estar vacío');
+  }
+  const [rows] = await pool.execute(
+    'SELECT id FROM usuario WHERE id = ?',
+    [id]
+  );
+
+  if (rows.length === 0) {
+    throw new Error('El usuario no existe');
+  }
+  let hashedPassword = null;
+  if (user.password) {
+    hashedPassword = await bcrypt.hash(user.password, 10);
+  }
+  const [result] = await pool.query(
+    'CALL pa_UpdateUsuario(?,?,?,?)',
+    [
+      id,
+      user.email ?? null,
+      hashedPassword,
+      user.role ?? null
+    ]
+  );
+
+  return { message: 'Usuario actualizado exitosamente' };
+
+};
 
 
 
