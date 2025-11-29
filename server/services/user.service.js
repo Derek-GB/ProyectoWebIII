@@ -16,16 +16,32 @@ export const create = async (user) => {
     throw new Error('El usuario no puede estar vacío');
   }
 
-  const hashedPassword = await bcrypt.hash(user.password, 10);
+  const { nombre, email, password, role } = user;
+
+  
+  if (!nombre || !email || !password) {
+    throw new Error('Nombre, email y contraseña son obligatorios');
+  }
+
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const params = [
+    nombre,               
+    email,              
+    hashedPassword,     
+    role ?? null        
+  ];
 
   const [result] = await pool.query(
     'CALL pa_InsertUsuario(?,?,?,?)',
-    [user.name, user.email, hashedPassword, user.role]
+    params
   );
 
-  return { message: 'Usuario agregado exitosamente' };
-};
+  return { 
+    message: 'Usuario agregado exitosamente'
 
+  };
+};
 export const validateCredentials = async (name, password) => {
   const [rows] = await pool.execute(
     'SELECT * FROM usuario WHERE nombre = ?',

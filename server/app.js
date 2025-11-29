@@ -2,21 +2,25 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import tasksRoutes from './routes/tasksRoutes.js'; 
-import usersRoutes from './routes/users.Routes.js';
+import usersRoutes from './routes/user.route.js';
 import scheduleRoutes from './routes/schedule.route.js';
 import teachersRoutes from './routes/teacher.route.js';
 import pool from './services/db.js';
+import authRoutes from './routes/auth.route.js';
+import { verifyToken } from './middlewares/authMiddleware.js';
 
 const app = express();
 const PORT = 4000;
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json());
 
 // Montar rutas
+app.use('/api/auth', authRoutes);
+
 app.use('/api/tasks', tasksRoutes);
-app.use('/api/users', usersRoutes);
+app.use('/api/users', verifyToken ,usersRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/teachers',teachersRoutes);
 
