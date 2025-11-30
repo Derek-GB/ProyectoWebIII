@@ -1,9 +1,27 @@
 import express from 'express';
 import * as classroomService from '../services/classroom.service.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Aulas
+ *   description: Gestión de aulas
+ */
 const router = express.Router();
 const types = ['laboratorio', 'aula'];
 
+/**
+ * @swagger
+ * /classrooms:
+ *   get:
+ *     summary: Obtener todas las aulas
+ *     tags: [Aulas]
+ *     responses:
+ *       200:
+ *         description: Lista de aulas
+ *       500:
+ *         description: Error del servidor
+ */
 router.get('/', async (req, res) => {
     try {
         const classrooms = await classroomService.getAll();
@@ -14,7 +32,28 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+/**
+ * @swagger
+ * /classrooms/get/{id}:
+ *   get:
+ *     summary: Obtener aula por ID
+ *     tags: [Aulas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del aula
+ *     responses:
+ *       200:
+ *         description: Aula encontrada
+ *       400:
+ *         description: ID faltante o inválido
+ *       500:
+ *         description: Error del servidor
+ */
+router.get('get/:id', async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del aula es requerido' });
     }
@@ -27,16 +66,45 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.get('/disponibles', async (req, res) => {
+/**
+ * @swagger
+ * /classrooms/availables:
+ *   get:
+ *     summary: Obtener aulas disponibles
+ *     tags: [Aulas]
+ *     parameters:
+ *       - in: query
+ *         name: day
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [Lunes, Martes, Miércoles, Jueves, Viernes, Sábado]
+ *         description: Día de la semana
+ *       - in: query
+ *         name: hour
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "14:30"
+ *         description: Hora en formato HH:MM (24h)
+ *     responses:
+ *       200:
+ *         description: Lista de aulas disponibles
+ *       400:
+ *         description: Parámetros inválidos
+ *       500:
+ *         description: Error del servidor
+ */
+router.get('/availables', async (req, res) => {
     if (!req.query) return res.status(400).json({ error: 'Parámetros de consulta son requeridos' });
     const { day, hour } = req.query;
     if (!day || !hour) return res.status(400).json({ error: 'Día y hora son requeridos' });
-    const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     if (!days.includes(day)) {
         return res.status(400).json({ error: 'Día inválido. Los días permitidos son: ' + days.join(', ') });
     }
     const hourFormat = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-    if (!hour.test(hourFormat)) {
+    if (!hourFormat.test(hour)) {
         return res.status(400).json({ error: 'Hora inválida. El formato correcto es HH:MM en formato 24 horas.' });
     }
     try {
@@ -48,6 +116,38 @@ router.get('/disponibles', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /classrooms:
+ *   post:
+ *     summary: Crear un aula nueva
+ *     tags: [Aulas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - building
+ *               - type
+ *             properties:
+ *               name:
+ *                 type: string
+ *               building:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 enum: [laboratorio, aula]
+ *     responses:
+ *       201:
+ *         description: Aula creada exitosamente
+ *       400:
+ *         description: Datos faltantes o tipo inválido
+ *       500:
+ *         description: Error al insertar
+ */
 router.post('/', async (req, res) => {
     if (!req.body || !req.body.name || !req.body.building || !req.body.type) {
         return res.status(400).json({ error: 'Datos incompletos para crear el aula' });
@@ -64,6 +164,41 @@ router.post('/', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /classrooms/{id}:
+ *   put:
+ *     summary: Editar un aula existente
+ *     tags: [Aulas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del aula
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               building:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 enum: [laboratorio, aula]
+ *     responses:
+ *       200:
+ *         description: Aula actualizada
+ *       400:
+ *         description: Datos inválidos o incompletos
+ *       500:
+ *         description: Error de servidor
+ */
 router.put('/:id', async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del inventario es requerido' });
@@ -88,6 +223,27 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /classrooms/{id}:
+ *   delete:
+ *     summary: Eliminar un aula
+ *     tags: [Aulas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del aula
+ *     responses:
+ *       200:
+ *         description: Aula eliminada correctamente
+ *       400:
+ *         description: ID faltante
+ *       500:
+ *         description: Error al eliminar
+ */
 router.delete('/:id', async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del aula es requerido' });

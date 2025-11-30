@@ -5,7 +5,10 @@ import tasksRoutes from './routes/tasksRoutes.js';
 import usersRoutes from './routes/user.route.js';
 import scheduleRoutes from './routes/schedule.route.js';
 import teachersRoutes from './routes/teacher.route.js';
+import classroomRoutes from './routes/classroom.route.js';
+import inventoryRoutes from './routes/inventory.route.js';
 import pool from './services/db.js';
+import swagger from './utils/swagger.util.js';
 import authRoutes from './routes/auth.route.js';
 import { verifyToken } from './middlewares/authMiddleware.js';
 
@@ -13,17 +16,19 @@ const app = express();
 const PORT = 4000;
 
 // Middleware
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+app.use(cors({ origin: [process.env.CORS_ORIGIN, "http://localhost:80"] }));
 app.use(express.json());
 
 // Montar rutas
 app.use('/api/auth', authRoutes);
+app.use("/api/docs",swagger.serve,swagger.setup);
 
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/users', verifyToken ,usersRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/teachers',teachersRoutes);
-
+app.use('/api/classrooms', classroomRoutes);
+app.use('/api/inventory', inventoryRoutes);
 // Probar conexión
 (async () => {
   try {

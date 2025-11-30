@@ -18,7 +18,7 @@ export const getAvailable = async (day, hour) => {
     if (h < 8 || h > 21 || h === 12) {
         throw new Error('La hora debe estar entre 08:00 y 21:00; excluyendo el mediodía (12:00)');
     }
-    const [rows] = await pool.query('CALL pa_GetAulaDisponibles(?,?)', [day, hour]);
+    const [rows] = await pool.query('CALL pa_GetAulasDisponibles(?,?)', [day, hour]);
     return rows;
 }
 
