@@ -13,7 +13,10 @@ const swaggerDefinition = {
     servers: [
         {
             url: "http://localhost:4000/api",
-        }
+        },
+        {
+            url: "https://proyectowebvercel.vercel.app/api",
+        },
     ],
     components: {
     securitySchemes: {
