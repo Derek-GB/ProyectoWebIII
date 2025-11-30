@@ -16,7 +16,7 @@ const app = express();
 const PORT = 4000;
 
 // Middleware
-app.use(cors({ origin: [process.env.CORS_ORIGIN, "http://localhost:80"] }));
+app.use(cors());
 app.use(express.json());
 
 // Montar rutas

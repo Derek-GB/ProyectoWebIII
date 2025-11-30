@@ -20,7 +20,7 @@ export const getById = async (id) => {
 export const getAvailable = async (day, hour) => {
     const [h, m] = hour.split(':').map(x => parseInt(x));
     if (h < 8 || h > 21 || h === 12) {
-        throw new Error('La hora debe estar entre 08:00 y 21:00; excluyendo el mediodía (12:00)');
+        throw new Error('La hora debe estar entre 08:00 y 21:30; excluyendo el mediodía (12:00)');
     }
     const [rows] = await pool.query('CALL pa_GetAulasDisponibles(?,?)', [day, hour]);
     return rows;
