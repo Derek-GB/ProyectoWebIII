@@ -40,7 +40,7 @@ app.use('/api/inventory', inventoryRoutes);
 })();
 
 // Iniciar servidor
-// app.listen(PORT, () => {
-//   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+});
 export default app;
