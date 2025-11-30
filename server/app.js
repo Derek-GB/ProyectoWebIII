@@ -11,6 +11,7 @@ import pool from './services/db.js';
 import swagger from './utils/swagger.util.js';
 import authRoutes from './routes/auth.route.js';
 import { verifyToken } from './middlewares/authMiddleware.js';
+import { allowRoles } from './middlewares/roleMiddleware.js';
 
 const app = express();
 const PORT = 4000;
@@ -24,7 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use("/api/docs",swagger.serve,swagger.setup);
 
 app.use('/api/tasks', tasksRoutes);
-app.use('/api/users', verifyToken ,usersRoutes);
+app.use('/api/users', verifyToken, allowRoles('admin') ,usersRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/teachers',teachersRoutes);
 app.use('/api/classrooms', classroomRoutes);
