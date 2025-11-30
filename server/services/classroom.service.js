@@ -17,6 +17,7 @@ export const getById = async (id) => {
     return rows[0][0];
 }
 
+
 export const getAvailable = async (day, hour) => {
     const [h, m] = hour.split(':').map(x => parseInt(x));
     if (h < 8 || h > 21 || h === 12) {
