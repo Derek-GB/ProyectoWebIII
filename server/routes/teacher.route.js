@@ -56,6 +56,9 @@ router.get('/', async (req, res) => {
 
 
 router.get('/:id', async (req, res) => {
+    if (!req.params.id) {
+        return res.status(400).json({ error: 'ID del profesor es requerido' });
+    }
     try {
         const teacher = await teacherService.getById(req.params.id);
         res.status(200).json(teacher);
@@ -97,8 +100,21 @@ router.get('/:id', async (req, res) => {
  */
 
 router.post('/', async (req, res) => {
+    if (!req.body) {
+        return res.status(400).json({ error: 'Se requiere un body para registrar un profesor' });
+    }
+
+    const { nombre, correo, especialidad } = req.body;
+
+    if (!nombre) {
+        return res.status(400).json({ error: 'El campo nombre es obligatorio' });
+    }
+
+    if (correo && !emailRegex.test(correo)) {
+        return res.status(400).json({ error: 'Correo inválido' });
+    }
     try {
-        const newTeacher = await teacherService.create(req.body);
+        const newTeacher = await teacherService.create({ nombre, correo, especialidad });
         res.status(201).json(newTeacher);
     } catch (err) {
         if (err.message === 'El profesor no puede estar vacío') {
@@ -149,6 +165,12 @@ router.post('/', async (req, res) => {
  *         description: Error al actualizar profesor
  */
 router.put('/:id', async (req, res) => {
+    if (!req.params.id) {
+        return res.status(400).json({ error: 'ID del profesor es requerido' });
+    }
+    if (!req.body) {
+        return res.status(400).json({ error: 'no se proporcionaron datos para actualizar' });
+    }
     try {
         const { id } = req.params;
         const updatedTeacher = await teacherService.update(id, req.body);
@@ -188,6 +210,9 @@ router.put('/:id', async (req, res) => {
  */
 
 router.delete('/:id', async (req, res) => {
+    if (!req.params.id) {
+        return res.status(400).json({ error: 'ID del profesor es requerido' });
+    }
     try {
         const { id } = req.params; 
         const result = await teacherService.deleteById(id);
