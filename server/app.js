@@ -16,7 +16,7 @@ const app = express();
 const PORT = 4000;
 
 // Middleware
-app.use(cors());
+app.use(cors({origin: process.env.CORS_ORIGIN,credentials: true}));
 app.use(express.json());
 
 // Montar rutas
@@ -40,6 +40,7 @@ app.use('/api/inventory', inventoryRoutes);
 })();
 
 // Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+// });
+export default app;
