@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import tasksRoutes from './routes/tasksRoutes.js'; 
 import usersRoutes from './routes/user.route.js';
 import scheduleRoutes from './routes/schedule.route.js';
 import teachersRoutes from './routes/teacher.route.js';
@@ -24,7 +23,6 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/docs",swagger.serve,swagger.setup);
 
-app.use('/api/tasks', tasksRoutes);
 app.use('/api/users', verifyToken, allowRoles('admin') ,usersRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/teachers',teachersRoutes);
