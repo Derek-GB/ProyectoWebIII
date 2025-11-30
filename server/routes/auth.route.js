@@ -1,5 +1,6 @@
 import express from 'express';
 import { login } from '../services/auth.service.js';
+import rateLimit from 'express-rate-limit';
 
 /**
  * @swagger
@@ -9,6 +10,16 @@ import { login } from '../services/auth.service.js';
  */
 const router = express.Router();
 
+
+const loginLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,            
+  message: {
+    error: 'Demasiados intentos de inicio de sesión. Intente nuevamente en 1 minuto.'
+  },
+  standardHeaders: true, 
+  legacyHeaders: false,  
+});
 
 /**
  * @swagger
@@ -35,8 +46,10 @@ const router = express.Router();
  *         description: Inicio de sesión exitoso, devuelve token y datos del usuario
  *       401:
  *         description: Credenciales inválidas
+ *       429:
+ *         description: Demasiados intentos de inicio de sesión
  */
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   const { name, password } = req.body; 
   try {
     const result = await login(name, password);
