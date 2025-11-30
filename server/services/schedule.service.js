@@ -33,3 +33,23 @@ export const deleteById = async (id) => {
   }
   return { message: 'Horario eliminado exitosamente' };
 };
+
+export const getScheduleByTeacherAndDay = async (teacher,day,hour) => {
+  const [rows] = await pool.query('CALL pa_SelectHorarioPorProfesorYDia(?,?,?)', [teacher, day, hour]);  
+  return rows[0];
+};
+
+export const getScheduleByCourseAndDay = async (course,day,hour) => {
+  const [rows] = await pool.query('CALL pa_SelectHorarioPorCursoYDia(?,?,?)', [course, day, hour]);  
+  return rows[0];
+};
+
+export const getClassByCourseAndDay = async (teacher,numberClass,typeClass) => {
+  const [rows] = await pool.query('CALL pa_SelectHorarioPorProfesorYAula(?,?,?)', [teacher, numberClass, typeClass]);  
+  return rows[0];
+};
+
+export const getTeacherByClassAndDay = async (numberClass,typeClass,day,hour) => {
+  const [rows] = await pool.query('CALL pa_SelectProfesorEnAulaPorHora(?,?,?,?)', [numberClass, typeClass, day, hour]);  
+  return rows[0];
+}; 

@@ -69,4 +69,48 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+router.get('/teacher/:teacher/day/:day/hour/:hour', async (req, res) => {
+  try {
+    const { teacher, day, hour } = req.params;
+    const schedule = await scheduleService.getScheduleByTeacherAndDay(teacher, day, hour);
+    res.status(200).json(schedule);
+  } catch (err) {
+    console.error('Error en consulta:', err);
+    res.status(500).json({ error: 'Error en la base de datos' });
+  }
+});
+
+router.get('/course/:course/day/:day/hour/:hour', async (req, res) => {
+  try {
+    const { course, day, hour } = req.params;
+    const schedule = await scheduleService.getScheduleByCourseAndDay(course, day, hour);
+    res.status(200).json(schedule);
+  } catch (err) {
+    console.error('Error en consulta:', err);
+    res.status(500).json({ error: 'Error en la base de datos' });
+  }
+});
+
+router.get('/teacher/:teacher/classroomNumber/:numberClass/classroomType/:typeClass', async (req, res) => {
+  try {
+    const { teacher, numberClass, typeClass } = req.params;
+    const schedule = await scheduleService.getClassByCourseAndDay(teacher, numberClass, typeClass);
+    res.status(200).json(schedule);
+  } catch (err) {
+    console.error('Error en consulta:', err);
+    res.status(500).json({ error: 'Error en la base de datos' });
+  }
+});
+
+router.get('/classroomNumber/:numberClass/classroomType/:typeClass/day/:day/hour/:hour', async (req, res) => {
+  try {
+    const { numberClass, typeClass, day, hour } = req.params;
+    const schedule = await scheduleService.getTeacherByClassAndDay(numberClass, typeClass, day, hour);
+    res.status(200).json(schedule);
+  } catch (err) {
+    console.error('Error en consulta:', err);
+    res.status(500).json({ error: 'Error en la base de datos' });
+  }
+});
+
 export default router; 
