@@ -23,7 +23,6 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/docs",swagger.serve,swagger.setup);
 
-
 app.use('/api/users', verifyToken, allowRoles('admin') ,usersRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/teachers',teachersRoutes);
