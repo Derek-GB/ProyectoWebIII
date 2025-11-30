@@ -15,7 +15,7 @@ const swaggerDefinition = {
             url: "http://localhost:4000/api",
         },
         {
-            url: "https://proyectowebvercel.vercel.app/api",
+            url: "https://proyectowebiii.onrender.com/api",
         },
     ],
     components: {
