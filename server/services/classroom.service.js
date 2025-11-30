@@ -6,6 +6,10 @@ export const getAll = async () => {
 }
 
 export const getById = async (id) => {
+    id = Number(id);
+    if (!Number.isInteger(id) || id <= 0) {
+        throw new Error('El ID debe ser un número entero positivo');
+    }
     const [rows] = await pool.query('CALL pa_GetAulaById(?)', [id]);
     if (rows[0].length === 0) {
         throw new Error('Aula no encontrada');
@@ -41,6 +45,7 @@ export const update = async (id, classroom) => {
     if (!classroom) {
         throw new Error('El aula no puede estar vacía');
     }
+    id = Number(id);
     if (!Number.isInteger(id) || id <= 0) {
         throw new Error('El ID debe ser un número entero positivo');
     }
@@ -71,6 +76,7 @@ export const update = async (id, classroom) => {
 }
 
 export const deleteById = async (id) => {
+    id = Number(id);
     if (!Number.isInteger(id) || id <= 0) {
         throw new Error('El ID debe ser un número entero positivo');
     }

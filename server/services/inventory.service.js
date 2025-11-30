@@ -6,6 +6,7 @@ export const getAll = async () => {
 }
 
 export const getById = async (id) => {
+    id = Number(id);
     if (!Number.isInteger(id) || id <= 0) {
         throw new Error('El ID debe ser un número entero positivo');
     }
@@ -21,6 +22,8 @@ export const create = async (inventory) => {
         throw new Error('El inventario no puede estar vacío');
     }
     const {description, teamName, quantity, classroomId } = inventory;
+    quantity = Number(quantity);
+    classroomId = Number(classroomId);
     if (!Number.isInteger(quantity) || quantity <= 0) {
         throw new Error('La cantidad debe ser un número positivo');
     }
@@ -41,6 +44,7 @@ export const update = async (id, inventory) => {
     if (!inventory) {
         throw new Error('El inventario no puede estar vacío');
     }
+    id = Number(id);
     if (!Number.isInteger(id) || id <= 0) {
         throw new Error('El ID debe ser un número entero positivo');
     }
@@ -57,6 +61,8 @@ export const update = async (id, inventory) => {
         quantity = inventory.quantity;
         classroomId = inventory.classroomId;
     }
+    quantity = Number(quantity);
+    classroomId = Number(classroomId);
     if (!Number.isInteger(quantity) || quantity <= 0) {
         throw new Error('La cantidad debe ser un número positivo');
     }
@@ -77,6 +83,7 @@ export const update = async (id, inventory) => {
 }
 
 export const deleteById = async (id) => {
+    id = Number(id);
     if (!Number.isInteger(id) || id <= 0) {
         throw new Error('El ID debe ser un número entero positivo');
     }
