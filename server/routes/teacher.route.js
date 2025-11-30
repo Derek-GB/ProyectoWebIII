@@ -69,4 +69,15 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+router.get('/:nombre/schedule', async (req, res) => {
+    try {
+        const { nombre } = req.params;
+        const schedule = await teacherService.getScheduleByTeacher(nombre);
+        res.status(200).json(schedule);
+    } catch (err) {
+        console.error('Error en consulta:', err);
+        res.status(500).json({ error: 'Error en la base de datos' });
+    }
+});
+
 export default router;

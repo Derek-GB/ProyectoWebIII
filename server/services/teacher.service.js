@@ -34,3 +34,7 @@ export const deleteById = async (id) => {
     return { message: 'Profesor eliminado exitosamente' };
 }
 
+export const getScheduleByTeacher = async (nombre) => {
+    const [result] = await pool.query('CALL pa_GetHorariosByProfesor(?)', [nombre]);
+    return result[0];
+};
