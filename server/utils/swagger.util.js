@@ -12,10 +12,10 @@ const swaggerDefinition = {
     },
     servers: [
         {
-            url: "http://localhost:4000/api",
+            url: "https://proyectowebiii.onrender.com/api",
         },
         {
-            url: "https://proyectowebiii.onrender.com/api",
+            url: "http://localhost:4000/api",
         },
     ],
     components: {
