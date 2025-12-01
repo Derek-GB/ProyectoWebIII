@@ -221,7 +221,7 @@ router.delete('/:id', async (req, res) => {
  * @swagger
  * /schedules/teacher/{teacher}/day/{day}/hour/{hour}:
  *   get:
- *     summary: Obtener horario por profesor, día y hora específica
+ *     summary: Obtener numero de aula por profesor, día y hora específica
  *     tags: [Horarios]
  *     parameters:
  *       - in: path
@@ -267,7 +267,7 @@ router.get('/teacher/:teacher/day/:day/hour/:hour', async (req, res) => {
  * @swagger
  * /schedules/course/{course}/day/{day}/hour/{hour}:
  *   get:
- *     summary: Obtener horario por curso, día y hora específica
+ *     summary: Obtener numero de aula por curso, día y hora específica
  *     tags: [Horarios]
  *     parameters:
  *       - in: path
