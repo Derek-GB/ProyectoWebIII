@@ -12,7 +12,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /schedules:
+ * /schedule:
  *   get:
  *     summary: Obtener todos los horarios
  *     tags: [Horarios]
@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
- * /schedules/{id}:
+ * /schedule/{id}:
  *   get:
  *     summary: Obtener un horario por ID
  *     tags: [Horarios]
@@ -65,7 +65,7 @@ router.get('/:id', async (req, res) => {
 
 /**
  * @swagger
- * /schedules:
+ * /schedule:
  *   post:
  *     summary: Crear un nuevo horario
  *     tags: [Horarios]
@@ -123,7 +123,7 @@ router.post('/', async (req, res) => {
 
 /**
  * @swagger
- * /schedules/{id}:
+ * /schedule/{id}:
  *   put:
  *     summary: Actualizar un horario existente
  *     tags: [Horarios]
@@ -183,7 +183,7 @@ router.put('/:id', async (req, res) => {
 
 /**
  * @swagger
- * /schedules/{id}:
+ * /schedule/{id}:
  *   delete:
  *     summary: Eliminar un horario
  *     tags: [Horarios]
@@ -219,7 +219,7 @@ router.delete('/:id', async (req, res) => {
 
 /**
  * @swagger
- * /schedules/teacher/{teacher}/day/{day}/hour/{hour}:
+ * /schedule/teacher/{teacher}/day/{day}/hour/{hour}:
  *   get:
  *     summary: Obtener numero de aula por profesor, día y hora específica
  *     tags: [Horarios]
@@ -265,7 +265,7 @@ router.get('/teacher/:teacher/day/:day/hour/:hour', async (req, res) => {
 
 /**
  * @swagger
- * /schedules/course/{course}/day/{day}/hour/{hour}:
+ * /schedule/course/{course}/day/{day}/hour/{hour}:
  *   get:
  *     summary: Obtener numero de aula por curso, día y hora específica
  *     tags: [Horarios]
@@ -311,7 +311,7 @@ router.get('/course/:course/day/:day/hour/:hour', async (req, res) => {
 
 /**
  * @swagger
- * /schedules/teacher/{teacher}/classroomNumber/{numberClass}/classroomType/{typeClass}:
+ * /schedule/teacher/{teacher}/classroomNumber/{numberClass}/classroomType/{typeClass}:
  *   get:
  *     summary: Obtener horario por profesor y aula específica (número y tipo)
  *     tags: [Horarios]
@@ -359,7 +359,7 @@ router.get('/teacher/:teacher/classroomNumber/:numberClass/classroomType/:typeCl
 
 /**
  * @swagger
- * /schedules/classroomNumber/{numberClass}/classroomType/{typeClass}/day/{day}/hour/{hour}:
+ * /schedule/classroomNumber/{numberClass}/classroomType/{typeClass}/day/{day}/hour/{hour}:
  *   get:
  *     summary: Obtener el profesor asignado a un aula en una fecha y hora específicas
  *     tags: [Horarios]
