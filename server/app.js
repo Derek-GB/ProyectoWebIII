@@ -24,10 +24,10 @@ app.use('/api/auth', authRoutes);
 app.use("/api/docs",swagger.serve,swagger.setup);
 
 app.use('/api/users', verifyToken, allowRoles('admin') ,usersRoutes);
-app.use('/api/schedule', scheduleRoutes);
-app.use('/api/teachers',teachersRoutes);
-app.use('/api/classrooms', classroomRoutes);
-app.use('/api/inventory', inventoryRoutes);
+app.use('/api/schedule', verifyToken, scheduleRoutes);
+app.use('/api/teachers', verifyToken, teachersRoutes);
+app.use('/api/classrooms', verifyToken, classroomRoutes);
+app.use('/api/inventory', verifyToken, inventoryRoutes);
 // Probar conexión
 (async () => {
   try {
