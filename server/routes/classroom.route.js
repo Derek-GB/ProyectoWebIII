@@ -20,6 +20,8 @@ const types = ['laboratorio', 'aula'];
  *     responses:
  *       200:
  *         description: Lista de aulas
+ *       404:
+ *         description: No hay aulas disponibles
  *       500:
  *         description: Error del servidor
  */
@@ -29,7 +31,8 @@ router.get('/', allowRoles('admin', 'coordinador', 'consultor'), async (req, res
         res.status(200).json(classrooms);
     } catch (err) {
         console.error('Error en consulta:', err);
-        res.status(500).json({ error: 'Error al obtener las aulas: ' + err.message });
+        const code = err.message === 'No hay aulas disponibles' ? 404 : 500;
+        res.status(code).json({ error: 'Error al obtener las aulas: ' + err.message });
     }
 });
 
@@ -51,6 +54,8 @@ router.get('/', allowRoles('admin', 'coordinador', 'consultor'), async (req, res
  *         description: Aula encontrada
  *       400:
  *         description: ID faltante o inválido
+ *       404:
+ *         description: Aula no encontrada
  *       500:
  *         description: Error del servidor
  */
@@ -63,7 +68,8 @@ router.get('get/:id', allowRoles('admin', 'coordinador', 'consultor'), async (re
         res.status(200).json(classroom);
     } catch (err) {
         console.error('Error en consulta:', err);
-        res.status(500).json({ error: 'Error al obtener el aula: ' + err.message });
+        const code = err.message === 'Aula no encontrada' ? 404 : 500;
+        res.status(code).json({ error: 'Error al obtener el aula: ' + err.message });
     }
 });
 
@@ -93,6 +99,8 @@ router.get('get/:id', allowRoles('admin', 'coordinador', 'consultor'), async (re
  *         description: Lista de aulas disponibles
  *       400:
  *         description: Parámetros inválidos
+ *       404:
+ *         description: No hay aulas disponibles
  *       500:
  *         description: Error del servidor
  */
@@ -113,7 +121,8 @@ router.get('/availables', allowRoles('admin', 'coordinador', 'consultor'), async
         res.status(200).json(availableClassrooms);
     } catch (err) {
         console.error('Error en consulta:', err);
-        res.status(500).json({ error: 'Error al obtener las aulas disponibles: ' + err.message });
+        const code = err.message === 'No hay aulas disponibles' ? 404 : 500;
+        res.status(code).json({ error: 'Error al obtener las aulas disponibles: ' + err.message });
     }
 });
 
@@ -161,7 +170,11 @@ router.post('/', allowRoles('admin'), async (req, res) => {
         res.status(201).json(newClassroom);
     } catch (err) {
         console.error('Error al insertar:', err);
-        res.status(500).json({ error: 'Error al agregar aula: ' + err.message });
+        const msg = err.message.toLowerCase();
+        let code = 500;
+        if (msg.includes('id') || msg.includes('cantidad') || msg.includes('cadena'))
+            code = 400;
+        res.status(code).json({ error: 'Error al agregar inventario: ' + err.message });
     }
 });
 
@@ -200,7 +213,7 @@ router.post('/', allowRoles('admin'), async (req, res) => {
  *       500:
  *         description: Error de servidor
  */
-router.put('/:id', allowRoles, async (req, res) => {
+router.put('/:id', allowRoles('admin'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del inventario es requerido' });
     }
@@ -217,7 +230,11 @@ router.put('/:id', allowRoles, async (req, res) => {
             res.status(200).json(updatedClassroom);
         } catch (err) {
             console.error('Error al actualizar:', err);
-            res.status(500).json({ error: 'Error al actualizar el aula: ' + err.message });
+            const msg = err.message.toLowerCase();
+            let code = 500;
+            if (msg.includes('id') || msg.includes('cantidad') || msg.includes('cadena'))
+            code = 400;
+            res.status(code).json({ error: 'Error al agregar inventario: ' + err.message });
         }
     } else {
         return res.status(400).json({ error: 'No se enviaron datos válidos para actualizar el aula' });
@@ -254,7 +271,8 @@ router.delete('/:id', allowRoles('admin'), async (req, res) => {
         res.status(200).json(result);
     } catch (err) {
         console.error('Error al eliminar:', err);
-        res.status(500).json({ error: 'Error al eliminar el aula: ' + err.message });
+        const code = err.message === 'Aula no encontrada' ? 404 : 500;
+        res.status(code).json({ error: 'Error al eliminar el aula: ' + err.message });
     }
 });
 

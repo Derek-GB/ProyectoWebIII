@@ -2,6 +2,9 @@ import pool from "./db.js";
 
 export const getAll = async () => {
     const [rows] = await pool.query('SELECT * FROM vwGetAllAula');
+    if (rows.length === 0) {
+        throw new Error('No hay aulas disponibles');
+    }
     return rows;
 }
 
@@ -24,7 +27,10 @@ export const getAvailable = async (day, hour) => {
         throw new Error('La hora debe estar entre 08:00 y 21:30; excluyendo el mediodía (12:00)');
     }
     const [rows] = await pool.query('CALL pa_GetAulasDisponibles(?,?)', [day, hour]);
-    return rows;
+    if (rows[0].length === 0) {
+        throw new Error('No hay aulas disponibles');
+    }
+    return rows[0];
 }
 
 export const create = async (classroom) => {
@@ -50,22 +56,13 @@ export const update = async (id, classroom) => {
     if (!Number.isInteger(id) || id <= 0) {
         throw new Error('El ID debe ser un número entero positivo');
     }
-    let {name, building, type } = classroom;
-    if (!name || !building || !type) {
-        original = await getById(id);
-        for (const key in original) {
-            if (!classroom[key]) {
-                classroom[key] = original[key];
-            }
-        }
-        name = classroom.name;
-        building = classroom.building;
-        type = classroom.type;
-    }
-    if (typeof building !== 'string' || building.trim() === '') {
+
+    const {name, building, type } = classroom;
+
+    if (building !== undefined && (typeof building !== 'string' || building.trim() === '')) {
         throw new Error('El edificio debe ser una cadena no vacía');
     }
-    if (typeof name !== 'string' || name.trim() === '') {
+    if (name !== undefined && (typeof name !== 'string' || name.trim() === '')) {
         throw new Error('El nombre debe ser una cadena no vacía');
     }
     
