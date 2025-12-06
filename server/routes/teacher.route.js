@@ -16,7 +16,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /teachers:
+ * /teacher:
  *   get:
  *     summary: Obtener todos los profesores
  *     tags: [Profesores]
@@ -39,7 +39,7 @@ router.get('/', allowRoles('admin','coordinador','consultor'), async (req, res) 
 
 /**
  * @swagger
- * /teachers/{id}:
+ * /teacher/{id}:
  *   get:
  *     summary: Obtener un profesor por ID
  *     tags: [Profesores]
@@ -83,7 +83,7 @@ router.get('/:id', allowRoles('admin','coordinador','consultor'), async (req, re
 
 /**
  * @swagger
- * /teachers:
+ * /teacher:
  *   post:
  *     summary: Crear un nuevo profesor
  *     tags: [Profesores]
@@ -142,7 +142,7 @@ router.post('/', allowRoles('admin'), async (req, res) => {
 
 /**
  * @swagger
- * /teachers/{id}:
+ * /teacher/{id}:
  *   put:
  *     summary: Actualizar un profesor existente
  *     tags: [Profesores]
@@ -210,7 +210,7 @@ router.put('/:id', allowRoles('admin','coordinador'), async (req, res) => {
 
 /**
  * @swagger
- * /teachers/{id}:
+ * /teacher/{id}:
  *   delete:
  *     summary: Eliminar un profesor
  *     tags: [Profesores]
@@ -253,7 +253,7 @@ router.delete('/:id', allowRoles('admin'), async (req, res) => {
 });
 /**
  * @swagger
- * /teachers/{nombre}/schedule:
+ * /teacher/{nombre}/schedule:
  *   get:
  *     summary: Obtener el horario de un profesor por nombre
  *     tags: [Profesores]
