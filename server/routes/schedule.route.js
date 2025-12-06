@@ -26,6 +26,9 @@ const router = express.Router();
 router.get('/',allowRoles('admin','coordinador','consultor'),async (req, res) => {
   try {
     const schedules = await scheduleService.getAll();  
+    if (!schedules || (Array.isArray(schedules) && schedules.length === 0)) {
+      return res.status(404).json({ message: 'No hay horarios registrados' });
+    }
     res.json(schedules);
   } catch (err) {
     console.error('Error en consulta:', err);
@@ -59,6 +62,12 @@ router.get('/:id',allowRoles('admin','coordinador','consultor'), async (req, res
     const schedule = await scheduleService.getById(req.params.id);
     res.status(200).json(schedule);
   } catch (err) {
+    if (err && err.message === 'Horario no encontrado') {
+      return res.status(404).json({ error: err.message });
+    }
+    if (err && err.message && err.message.toLowerCase().includes('id de horario inválido')) {
+      return res.status(400).json({ error: err.message });
+    }
     console.error('Error en consulta:', err);
     res.status(500).json({ error: 'Error en la base de datos' });
   }
@@ -257,6 +266,9 @@ router.get('/teacher/:teacher/day/:day/hour/:hour',allowRoles('admin','coordinad
   try {
     const { teacher, day, hour } = req.params;
     const schedule = await scheduleService.getScheduleByTeacherAndDay(teacher, day, hour);
+    if (!schedule || (Array.isArray(schedule) && schedule.length === 0)) {
+      return res.status(404).json({ message: 'No se encontraron horarios para ese profesor en el día y hora indicados' });
+    }
     res.status(200).json(schedule);
   } catch (err) {
     console.error('Error en consulta:', err);
@@ -303,6 +315,9 @@ router.get('/course/:course/day/:day/hour/:hour',allowRoles('admin','coordinador
   try {
     const { course, day, hour } = req.params;
     const schedule = await scheduleService.getScheduleByCourseAndDay(course, day, hour);
+    if (!schedule || (Array.isArray(schedule) && schedule.length === 0)) {
+      return res.status(404).json({ message: 'No se encontraron horarios para ese curso en el día y hora indicados' });
+    }
     res.status(200).json(schedule);
   } catch (err) {
     console.error('Error en consulta:', err);
@@ -351,6 +366,9 @@ router.get('/teacher/:teacher/classroomNumber/:numberClass/classroomType/:typeCl
   try {
     const { teacher, numberClass, typeClass } = req.params;
     const schedule = await scheduleService.getClassByCourseAndDay(teacher, numberClass, typeClass);
+    if (!schedule || (Array.isArray(schedule) && schedule.length === 0)) {
+      return res.status(404).json({ message: 'No se encontraron horarios para ese profesor y aula indicados' });
+    }
     res.status(200).json(schedule);
   } catch (err) {
     console.error('Error en consulta:', err);
@@ -408,10 +426,56 @@ router.get('/classroomNumber/:numberClass/classroomType/:typeClass/day/:day/hour
   try {
     const { numberClass, typeClass, day, hour } = req.params;
     const schedule = await scheduleService.getTeacherByClassAndDay(numberClass, typeClass, day, hour);
+    if (!schedule || (Array.isArray(schedule) && schedule.length === 0)) {
+      return res.status(404).json({ message: 'No se encontró un profesor asignado a esa aula en la hora indicada' });
+    }
     res.status(200).json(schedule);
   } catch (err) {
     console.error('Error en consulta:', err);
     res.status(500).json({ error: 'Error en la base de datos' });
+  }
+});
+
+/**
+ * @swagger
+ * /schedule/{verification}:
+ *   delete:
+ *     summary: Eliminar todos los horarios según el parámetro de verificación
+ *     tags: [Horarios]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: verification
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Parámetro de verificación para autorizar la eliminación masiva
+ *     responses:
+ *       200:
+ *         description: Horarios eliminados correctamente
+ *       400:
+ *         description: La verificación no permite eliminar los horarios
+ *       404:
+ *         description: No se eliminaron registros
+ *       500:
+ *         description: Error del servidor
+ */
+router.delete('/:verification', allowRoles('admin'), async (req, res) => {
+  try {
+    const { verification } = req.params;
+    const result = await scheduleService.deleteAll(verification);
+    if (result && result.message && result.message.startsWith('No se borrará')) {
+      return res.status(400).json(result);
+    }
+    res.json(result);
+  } catch (err) {
+    if (err.message === 'No se eliminaron registros') {
+      res.status(404).json({ error: err.message });
+    } else {
+      console.error('Error al eliminar:', err);
+      res.status(500).json({ error: 'Error al eliminar horario' });
+    }
   }
 });
 

@@ -1,0 +1,23 @@
+# Descripción del proyecto y objetivo
+Este proyecto consiste en el desarrollo de una API RESTful para la gestión integral de aulas, 
+horarios académicos, inventario de equipo tecnológico, profesores y usuarios dentro de la UTN sede Corobicí.
+La solución centraliza y automatiza tareas clave como la asignación de aulas, registro de horarios, 
+administración del inventario por aula y consulta de disponibilidad, facilitando la organización diaria y
+optimizando el uso de los recursos.
+
+Este proyecto busca aportar una solución tecnológica organizada, escalable y útil para entornos educativos
+o administrativos que requieren una coordinación confiable de espacios, personal y recursos materiales.
+
+# Tecnologías utilizadas.
+Node.js, Express.js, MySQL, mysql2, JSON Web Tokens (JWT), bcryptjs, CORS, express-rate-limit, express.json, Swagger/Swagger UI, Postman, Git, GitHub, Render, Railway
+
+# Como levantar el server
+npm install
+npm run dev
+
+# Integrantes y roles.
+
+Fernando Bolívar Brenes – Responsable de gestión y consultas de horarios
+Dylan Segura Sevilla – Responsable de gestión de usuarios y roles
+Anthony Conejo Rodríguez – Responsable de gestión y administración de profesores
+Derek González Barquero – Responsable de gestión de aulas y control de inventario

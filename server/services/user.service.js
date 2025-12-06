@@ -43,11 +43,12 @@ export const create = async (user) => {
   };
 };
 export const validateCredentials = async (name, password) => {
-  const [rows] = await pool.execute(
-    'SELECT * FROM usuario WHERE nombre = ?',
+  const [result] = await pool.query(
+    'CALL pa_GetUsuarioPorNombre(?)',
     [name]
   );
-  if (rows.length === 0) return null;
+  const rows = result[0]; 
+  if (!rows || rows.length === 0) return null;
   const user = rows[0];
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) return null;
@@ -60,7 +61,7 @@ export const update = async (id, user) => {
     throw new Error('El usuario no puede estar vacío');
   }
   const [rows] = await pool.execute(
-    'SELECT id FROM usuario WHERE id = ?',
+    'CALL pa_GetUsuarioById(?)',
     [id]
   );
 
@@ -83,6 +84,43 @@ export const update = async (id, user) => {
 
   return { message: 'Usuario actualizado exitosamente' };
 
+};
+
+export const changePassword = async (id, currentPassword, newPassword) => {
+  if (!id || !currentPassword || !newPassword) {
+    throw new Error('Debes proporcionar ID, contraseña actual y nueva contraseña');
+  }
+
+  const [rows] = await pool.query(
+    'CALL pa_GetUsuarioPasswordById(?)',
+    [id]
+  );
+
+  const userRow = rows[0]?.[0];
+
+  if (!userRow) {
+    throw new Error('El usuario no existe');
+  }
+
+  const hash = userRow.passwordHash;
+
+  if (!hash) {
+    throw new Error('No se encontró el hash de la contraseña en el usuario');
+  }
+
+  const isValid = await bcrypt.compare(currentPassword, hash);
+  if (!isValid) {
+    throw new Error('La contraseña actual es incorrecta');
+  }
+
+  const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await pool.query(
+    'CALL pa_UpdateUsuario(?, ?, ?, ?)',
+    [id, null, newHashedPassword, null] 
+  );
+
+  return { message: 'Contraseña actualizada correctamente' };
 };
 
 
