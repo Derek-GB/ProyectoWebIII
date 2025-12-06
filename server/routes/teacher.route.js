@@ -1,5 +1,6 @@
 import express from 'express';
 import * as teacherService from '../services/teacher.service.js'
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 
 /**
@@ -23,7 +24,7 @@ const router = express.Router();
  *       500:
  *         description: Error en la base de datos
  */
-router.get('/', async (req, res) => {
+router.get('/',allowRoles('admin','coordinador','consultor'), async (req, res) => {
     try {
         const teachers = await teacherService.getAll();
         res.json(teachers);
@@ -55,7 +56,7 @@ router.get('/', async (req, res) => {
  */
 
 
-router.get('/:id', async (req, res) => {
+router.get('/:id',allowRoles('admin','coordinador','consultor'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del profesor es requerido' });
     }
@@ -99,7 +100,7 @@ router.get('/:id', async (req, res) => {
  *         description: Error al agregar profesor
  */
 
-router.post('/', async (req, res) => {
+router.post('/',allowRoles('admin'),async (req, res) => {
     if (!req.body) {
         return res.status(400).json({ error: 'Se requiere un body para registrar un profesor' });
     }
@@ -164,7 +165,7 @@ router.post('/', async (req, res) => {
  *       500:
  *         description: Error al actualizar profesor
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id',allowRoles('admin','coordinador'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del profesor es requerido' });
     }
@@ -209,7 +210,7 @@ router.put('/:id', async (req, res) => {
  *         description: Error al eliminar profesor
  */
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', allowRoles('admin'),async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del profesor es requerido' });
     }
@@ -245,7 +246,7 @@ router.delete('/:id', async (req, res) => {
  *       500:
  *         description: Error en la base de datos
  */
-router.get('/:nombre/schedule', async (req, res) => {
+router.get('/:nombre/schedule',allowRoles('admin','coordinador','consultor'), async (req, res) => {
     try {
         const { nombre } = req.params;
         const schedule = await teacherService.getScheduleByTeacher(nombre);
