@@ -2,7 +2,7 @@ import pool from './db.js';
 
 const isValidId = (id) => id && Number.isInteger(Number(id)) && Number(id) > 0;
 const isValidTime = (time) => /^([01]\d|2[0-3]):[0-5]\d$/.test(time);
-const isValidDayOfWeek = (day) => ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].includes(day);
+const isValidDayOfWeek = (day) => ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo','Miercoles','Sabado','lunes','martes','miércoles','jueves','viernes','sábado','domingo','miercoles','sabado'].includes(day);
 
 export const getAll = async () => {
   const [rows] = await pool.query('SELECT * FROM vwGetAllHorario');  
@@ -93,8 +93,8 @@ export const deleteById = async (id) => {
 };
 
 export const getScheduleByTeacherAndDay = async (teacher,day,hour) => {
-  if (!isValidId(teacher)) {
-    throw new Error('ID de profesor inválido. Debe ser un número entero positivo');
+  if (!teacher || typeof teacher !== 'string' || teacher.trim() === '') {
+    throw new Error('Nombre de profesor inválido. Debe ser una cadena no vacía');
   }
   if (!isValidDayOfWeek(day)) {
     throw new Error('Día de la semana inválido. Debe ser: Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo');
@@ -123,8 +123,8 @@ export const getScheduleByCourseAndDay = async (course,day,hour) => {
 };
 
 export const getClassByCourseAndDay = async (teacher,numberClass,typeClass) => {
-  if (!isValidId(teacher)) {
-    throw new Error('ID de profesor inválido. Debe ser un número entero positivo');
+  if (!teacher || typeof teacher !== 'string' || teacher.trim() === '') {
+    throw new Error('Nombre de profesor inválido. Debe ser una cadena no vacía');
   }
   if (!numberClass || typeof numberClass !== 'string' || numberClass.trim() === '') {
     throw new Error('Número de aula no válido. Debe ser una cadena no vacía');
@@ -154,3 +154,14 @@ export const getTeacherByClassAndDay = async (numberClass,typeClass,day,hour) =>
   const [rows] = await pool.query('CALL pa_SelectProfesorEnAulaPorHora(?,?,?,?)', [numberClass, typeClass, day, hour]);  
   return rows[0] || null;
 }; 
+
+export const deleteAll = async (verification) => {
+  if (!verification || typeof verification !== 'string' || verification.toLowerCase() !== 'si') {
+    return { message: 'No se borrará nada. Envía "si" como parámetro para confirmar el borrado.' };
+  }
+  const [result] = await pool.query('CALL pa_DeleteAllHorario()');
+  if (result.affectedRows === 0) {
+    throw new Error('No se eliminaron registros');
+  }
+  return { message: 'Horarios eliminados exitosamente' };
+};
