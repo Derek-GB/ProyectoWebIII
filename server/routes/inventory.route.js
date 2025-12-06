@@ -1,5 +1,6 @@
 import express from 'express';
 import * as inventoryService from '../services/inventory.service.js';
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 /**  
  * @swagger  
@@ -23,7 +24,7 @@ const router = express.Router();
  *       500:
  *         description: Error obteniendo los inventarios
  */
-router.get('/', async (req, res) => {
+router.get('/', allowRoles('admin', 'coordinador', 'consultor'), async (req, res) => {
     try {
         const inventories = await inventoryService.getAll();
         res.status(200).json(inventories);
@@ -56,7 +57,7 @@ router.get('/', async (req, res) => {
  *       404:
  *         description: Inventario no encontrado
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', allowRoles('admin', 'coordinador', 'consultor'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del inventario es requerido' });
     }
@@ -106,7 +107,7 @@ router.get('/:id', async (req, res) => {
  *       500:
  *         description: Error creando inventario
  */
-router.post('/', async (req, res) => {
+router.post('/', allowRoles('admin'), async (req, res) => {
     if (!req.body || !req.body.classroomId || !req.body.teamName || !req.body.description || !req.body.quantity) {
         return res.status(400).json({ error: 'Datos incompletos para crear el inventario' });
     }
@@ -158,7 +159,7 @@ router.post('/', async (req, res) => {
  *       500:
  *         description: Error actualizando inventario
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', allowRoles('admin'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del inventario es requerido' });
     }
@@ -202,7 +203,7 @@ router.put('/:id', async (req, res) => {
  *       500:
  *         description: Error eliminando inventario
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', allowRoles('admin'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del inventario es requerido' });
     }

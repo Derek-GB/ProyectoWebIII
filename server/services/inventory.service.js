@@ -48,31 +48,21 @@ export const update = async (id, inventory) => {
     if (!Number.isInteger(id) || id <= 0) {
         throw new Error('El ID debe ser un número entero positivo');
     }
-    let {description, teamName, quantity, classroomId } = inventory;
-    if (!description || !teamName || !quantity || !classroomId) {
-        original = await getById(id);
-        for (const key in original) {
-            if (!inventory[key]) {
-                inventory[key] = original[key];
-            }
-        }
-        description = inventory.description;
-        teamName = inventory.teamName;
-        quantity = inventory.quantity;
-        classroomId = inventory.classroomId;
-    }
-    quantity = Number(quantity);
-    classroomId = Number(classroomId);
-    if (!Number.isInteger(quantity) || quantity <= 0) {
+
+    const {description, teamName } = inventory;
+    const quantity = inventory.quantity !== undefined ? Number(inventory.quantity) : undefined;
+    const classroomId = inventory.classroomId !== undefined ? Number(inventory.classroomId) : undefined;
+
+    if (quantity !== undefined && (!Number.isInteger(quantity) || quantity <= 0)) {
         throw new Error('La cantidad debe ser un número positivo');
     }
-    if (typeof description !== 'string' || description.trim() === '') {
+    if (description !== undefined && (typeof description !== 'string' || description.trim() === '')) {
         throw new Error('La descripción debe ser una cadena no vacía');
     }
-    if (typeof teamName !== 'string' || teamName.trim() === '') {
+    if (teamName !== undefined && (typeof teamName !== 'string' || teamName.trim() === '')) {
         throw new Error('El nombre debe ser una cadena no vacía');
     }
-    if (!Number.isInteger(classroomId) || classroomId <= 0) {
+    if (classroomId !== undefined && (!Number.isInteger(classroomId) || classroomId <= 0)) {
         throw new Error('El ID del aula debe ser un número entero positivo');
     }
     const [result] = await pool.query('CALL pa_UpdateInventario(?, ?, ?, ?, ?)', [ id, classroomId, teamName, description, quantity]);

@@ -1,5 +1,6 @@
 import express from 'express';
 import * as classroomService from '../services/classroom.service.js';
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 /**
  * @swagger
@@ -22,7 +23,7 @@ const types = ['laboratorio', 'aula'];
  *       500:
  *         description: Error del servidor
  */
-router.get('/', async (req, res) => {
+router.get('/', allowRoles('admin', 'coordinador', 'consultor'), async (req, res) => {
     try {
         const classrooms = await classroomService.getAll();
         res.status(200).json(classrooms);
@@ -53,7 +54,7 @@ router.get('/', async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-router.get('get/:id', async (req, res) => {
+router.get('get/:id', allowRoles('admin', 'coordinador', 'consultor'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del aula es requerido' });
     }
@@ -95,7 +96,7 @@ router.get('get/:id', async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-router.get('/availables', async (req, res) => {
+router.get('/availables', allowRoles('admin', 'coordinador', 'consultor'), async (req, res) => {
     if (!req.query) return res.status(400).json({ error: 'Parámetros de consulta son requeridos' });
     const { day, hour } = req.query;
     if (!day || !hour) return res.status(400).json({ error: 'Día y hora son requeridos' });
@@ -148,7 +149,7 @@ router.get('/availables', async (req, res) => {
  *       500:
  *         description: Error al insertar
  */
-router.post('/', async (req, res) => {
+router.post('/', allowRoles('admin'), async (req, res) => {
     if (!req.body || !req.body.name || !req.body.building || !req.body.type) {
         return res.status(400).json({ error: 'Datos incompletos para crear el aula' });
     }
@@ -199,7 +200,7 @@ router.post('/', async (req, res) => {
  *       500:
  *         description: Error de servidor
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', allowRoles, async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del inventario es requerido' });
     }
@@ -244,7 +245,7 @@ router.put('/:id', async (req, res) => {
  *       500:
  *         description: Error al eliminar
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', allowRoles('admin'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del aula es requerido' });
     }
