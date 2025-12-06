@@ -1,5 +1,6 @@
 import express from 'express';
 import * as scheduleService from '../services/schedule.service.js';  
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 /**
  * @swagger
@@ -22,7 +23,7 @@ const router = express.Router();
  *       500:
  *         description: Error del servidor
  */
-router.get('/', async (req, res) => {
+router.get('/',allowRoles('admin','coordinador','consultor'),async (req, res) => {
   try {
     const schedules = await scheduleService.getAll();  
     res.json(schedules);
@@ -53,7 +54,7 @@ router.get('/', async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id',allowRoles('admin','coordinador','consultor'), async (req, res) => {
   try {
     const schedule = await scheduleService.getById(req.params.id);
     res.status(200).json(schedule);
@@ -107,7 +108,7 @@ router.get('/:id', async (req, res) => {
  *       500:
  *         description: Error en el servidor
  */
-router.post('/', async (req, res) => {
+router.post('/',allowRoles('admin','coordinador'), async (req, res) => {
   try {
     const newSchedule = await scheduleService.create(req.body);
     res.status(201).json(newSchedule);
@@ -164,7 +165,7 @@ router.post('/', async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', allowRoles('admin','coordinador'), async (req, res) => {
   try {
     const { id } = req.params;
     const updatedSchedule = await scheduleService.update(id, req.body);
@@ -202,7 +203,7 @@ router.put('/:id', async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',allowRoles('admin','coordinador'), async (req, res) => {
   try {
     const { id } = req.params;
     const result = await scheduleService.deleteById(id);
@@ -252,7 +253,7 @@ router.delete('/:id', async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-router.get('/teacher/:teacher/day/:day/hour/:hour', async (req, res) => {
+router.get('/teacher/:teacher/day/:day/hour/:hour',allowRoles('admin','coordinador','consultor'), async (req, res) => {
   try {
     const { teacher, day, hour } = req.params;
     const schedule = await scheduleService.getScheduleByTeacherAndDay(teacher, day, hour);
@@ -298,7 +299,7 @@ router.get('/teacher/:teacher/day/:day/hour/:hour', async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-router.get('/course/:course/day/:day/hour/:hour', async (req, res) => {
+router.get('/course/:course/day/:day/hour/:hour',allowRoles('admin','coordinador','consultor'), async (req, res) => {
   try {
     const { course, day, hour } = req.params;
     const schedule = await scheduleService.getScheduleByCourseAndDay(course, day, hour);
@@ -346,7 +347,7 @@ router.get('/course/:course/day/:day/hour/:hour', async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-router.get('/teacher/:teacher/classroomNumber/:numberClass/classroomType/:typeClass', async (req, res) => {
+router.get('/teacher/:teacher/classroomNumber/:numberClass/classroomType/:typeClass',allowRoles('admin','coordinador','consultor'), async (req, res) => {
   try {
     const { teacher, numberClass, typeClass } = req.params;
     const schedule = await scheduleService.getClassByCourseAndDay(teacher, numberClass, typeClass);
@@ -403,7 +404,7 @@ router.get('/teacher/:teacher/classroomNumber/:numberClass/classroomType/:typeCl
  *       500:
  *         description: Error del servidor
  */
-router.get('/classroomNumber/:numberClass/classroomType/:typeClass/day/:day/hour/:hour', async (req, res) => {
+router.get('/classroomNumber/:numberClass/classroomType/:typeClass/day/:day/hour/:hour',allowRoles('admin','coordinador','consultor'), async (req, res) => {
   try {
     const { numberClass, typeClass, day, hour } = req.params;
     const schedule = await scheduleService.getTeacherByClassAndDay(numberClass, typeClass, day, hour);
