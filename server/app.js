@@ -10,7 +10,6 @@ import pool from './services/db.js';
 import swagger from './utils/swagger.util.js';
 import authRoutes from './routes/auth.route.js';
 import { verifyToken } from './middlewares/authMiddleware.js';
-import { allowRoles } from './middlewares/roleMiddleware.js';
 
 const app = express();
 const PORT = 4000;
@@ -23,10 +22,10 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/docs",swagger.serve,swagger.setup);
 
-app.use('/api/users', verifyToken, allowRoles('admin') ,usersRoutes);
+app.use('/api/user', verifyToken, usersRoutes);
 app.use('/api/schedule', verifyToken, scheduleRoutes);
-app.use('/api/teachers', verifyToken, teachersRoutes);
-app.use('/api/classrooms', verifyToken, classroomRoutes);
+app.use('/api/teacher', verifyToken, teachersRoutes);
+app.use('/api/classroom', verifyToken, classroomRoutes);
 app.use('/api/inventory', verifyToken, inventoryRoutes);
 // Probar conexión
 (async () => {

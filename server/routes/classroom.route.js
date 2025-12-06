@@ -13,7 +13,7 @@ const types = ['laboratorio', 'aula'];
 
 /**
  * @swagger
- * /classrooms:
+ * /classroom:
  *   get:
  *     summary: Obtener todas las aulas
  *     tags: [Aulas]
@@ -35,7 +35,7 @@ router.get('/', allowRoles('admin', 'coordinador', 'consultor'), async (req, res
 
 /**
  * @swagger
- * /classrooms/get/{id}:
+ * /classroom/get/{id}:
  *   get:
  *     summary: Obtener aula por ID
  *     tags: [Aulas]
@@ -69,7 +69,7 @@ router.get('get/:id', allowRoles('admin', 'coordinador', 'consultor'), async (re
 
 /**
  * @swagger
- * /classrooms/availables:
+ * /classroom/availables:
  *   get:
  *     summary: Obtener aulas disponibles
  *     tags: [Aulas]
@@ -119,7 +119,7 @@ router.get('/availables', allowRoles('admin', 'coordinador', 'consultor'), async
 
 /**
  * @swagger
- * /classrooms:
+ * /classroom:
  *   post:
  *     summary: Crear un aula nueva
  *     tags: [Aulas]
@@ -167,7 +167,7 @@ router.post('/', allowRoles('admin'), async (req, res) => {
 
 /**
  * @swagger
- * /classrooms/{id}:
+ * /classroom/{id}:
  *   put:
  *     summary: Editar un aula existente
  *     tags: [Aulas]
@@ -226,7 +226,7 @@ router.put('/:id', allowRoles, async (req, res) => {
 
 /**
  * @swagger
- * /classrooms/{id}:
+ * /classroom/{id}:
  *   delete:
  *     summary: Eliminar un aula
  *     tags: [Aulas]
