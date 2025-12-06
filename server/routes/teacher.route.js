@@ -2,6 +2,8 @@ import express from 'express';
 import * as teacherService from '../services/teacher.service.js'
 import { allowRoles } from '../middlewares/roleMiddleware.js';
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 
 /**
  * @swagger
@@ -122,7 +124,7 @@ router.post('/',allowRoles('admin'),async (req, res) => {
             res.status(400).json({ error: err.message });
         }else {
             console.error('Error al insertar:', err);
-            res.status(500).json({ error: 'Error al agregar profesor' });
+             res.status(500).json({ error: err.message });
         }
     }
 });
