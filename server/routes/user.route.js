@@ -1,5 +1,6 @@
 import express from 'express';
 import * as usersService from '../services/user.service.js';
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 /**
  * @swagger
@@ -13,7 +14,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /users:
+ * /user:
  *   get:
  *     summary: Obtener todos los usuarios
  *     tags: [Usuarios]
@@ -27,35 +28,19 @@ const router = express.Router();
  *       500:
  *         description: Error en la base de datos
  */
-router.get('/', async (req, res) => {
+router.get('/', allowRoles('admin'), async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     const users = await usersService.getAll();
     res.json(users);
   } catch (err) {
     console.error('Error en consulta:', err.message || err);
-
-    if (err.message === 'Credenciales inválidas' || err.message === 'Token inválido o no proporcionado') {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (err.message === 'No tiene permisos') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     res.status(500).json({ error: 'Error en la base de datos' });
   }
 });
 
 /**
  * @swagger
- * /users/{id}:
+ * /user/{id}:
  *   get:
  *     summary: Obtener un usuario por ID
  *     tags: [Usuarios]
@@ -78,15 +63,8 @@ router.get('/', async (req, res) => {
  *       500:
  *         description: Error en la base de datos
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', allowRoles('admin'), async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     const user = await usersService.getById(req.params.id);
 
     if (!user) {
@@ -99,26 +77,17 @@ router.get('/:id', async (req, res) => {
 
   } catch (err) {
     console.error('Error en consulta:', err.message);
-
-    if (err.message === 'Credenciales inválidas' || err.message === 'Token inválido o no proporcionado') {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (err.message === 'No tiene permisos') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     res.status(500).json({ error: 'Error en la base de datos' });
   }
 });
 
-
 /**
  * @swagger
- * /users:
+ * /user:
  *   post:
  *     summary: Crear un nuevo usuario
- *     tags: [Usuarios]
+ *     tags:
+ *       - Usuarios
  *     requestBody:
  *       required: true
  *       content:
@@ -152,29 +121,13 @@ router.get('/:id', async (req, res) => {
  *       500:
  *         description: Error al agregar usuario
  */
-router.post('/', async (req, res) => {
+router.post('/',allowRoles('admin'), async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     const newUser = await usersService.create(req.body);
     res.status(201).json(newUser);
   } catch (err) {
     if (err.message === 'El usuario no puede estar vacío') {
       return res.status(400).json({ error: err.message });
-    }
-
-    if (err.message === 'Credenciales inválidas' || err.message === 'Token inválido o no proporcionado') {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (err.message === 'No tiene permisos') {
-      return res.status(403).json({ error: 'No tiene permisos' });
     }
 
     console.error('Error al insertar:', err);
@@ -184,7 +137,7 @@ router.post('/', async (req, res) => {
 
 /**
  * @swagger
- * /users/{id}:
+ * /user/{id}:
  *   put:
  *     summary: Actualizar un usuario existente
  *     tags: [Usuarios]
@@ -224,16 +177,8 @@ router.post('/', async (req, res) => {
  *       500:
  *         description: Error al actualizar usuario
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', allowRoles('admin'),async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     const { id } = req.params;
     const updatedUser = await usersService.update(id, req.body);
     res.json(updatedUser);
@@ -252,14 +197,6 @@ router.put('/:id', async (req, res) => {
       });
     }
 
-    if (err.message === 'Credenciales inválidas' || err.message === 'Token inválido o no proporcionado') {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (err.message === 'No tiene permisos') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     return res.status(500).json({
       error: 'Error al actualizar usuario'
     });
@@ -268,7 +205,7 @@ router.put('/:id', async (req, res) => {
 
 /**
  * @swagger
- * /users/{id}/password:
+ * /user/{id}/password:
  *   put:
  *     summary: Actualizar la contraseña del propio usuario
  *     tags: [Usuarios]
@@ -309,18 +246,9 @@ router.put('/:id', async (req, res) => {
  *       500:
  *         description: Error al actualizar contraseña
  */
-router.put('/:id/password', async (req, res) => {
+router.put('/:id/password',allowRoles('consultor','coordinador','admin'), async (req, res) => {
   try {
     const { id } = req.params;
-
-    if (!req.user) {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (req.user.role !== 'admin' && String(req.user.id) !== String(id)) {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     const { currentPassword, newPassword } = req.body;
 
     const result = await usersService.changePassword(id, currentPassword, newPassword);
@@ -340,22 +268,13 @@ router.put('/:id/password', async (req, res) => {
       return res.status(400).json({ error: err.message });
     }
 
-    if (err.message === 'Credenciales inválidas' || err.message === 'Token inválido o no proporcionado') {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (err.message === 'No tiene permisos') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     return res.status(500).json({ error: 'Error al actualizar contraseña' });
   }
 });
 
-
 /**
  * @swagger
- * /users/{id}:
+ * /user/{id}:
  *   delete:
  *     summary: Eliminar un usuario
  *     tags: [Usuarios]
@@ -378,16 +297,8 @@ router.put('/:id/password', async (req, res) => {
  *       500:
  *         description: Error al eliminar usuario
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',allowRoles('admin'), async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     const { id } = req.params;
     const result = await usersService.deleteById(id);
     res.json(result);
@@ -396,17 +307,10 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    if (err.message === 'Credenciales inválidas' || err.message === 'Token inválido o no proporcionado') {
-      return res.status(401).json({ error: 'Token inválido o no proporcionado' });
-    }
-
-    if (err.message === 'No tiene permisos') {
-      return res.status(403).json({ error: 'No tiene permisos' });
-    }
-
     console.error('Error al eliminar:', err);
     res.status(500).json({ error: 'Error al eliminar usuario' });
   }
 });
+
 
 export default router; 
