@@ -59,7 +59,7 @@ router.get('/', allowRoles('admin', 'coordinador', 'consultor'), async (req, res
  *       500:
  *         description: Error del servidor
  */
-router.get('/:id', allowRoles('admin', 'coordinador', 'consultor'), async (req, res) => {
+router.get('/get/:id', allowRoles('admin', 'coordinador', 'consultor'), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({ error: 'ID del aula es requerido' });
     }
