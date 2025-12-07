@@ -38,7 +38,7 @@ router.get('/', allowRoles('admin', 'coordinador', 'consultor'), async (req, res
 
 /**
  * @swagger
- * /classroom/{id}:
+ * /classroom/get/{id}:
  *   get:
  *     summary: Obtener aula por ID
  *     tags: [Aulas]
