@@ -1,40 +1,44 @@
-import pool from "./db.js";
+import teacherModel from '../models/teacher.model.js';
 
 export const getAll = async () => {
-    const [rows] = await pool.query('SELECT * FROM vwGetAllProfesor');
-    return rows;
-}
+  return await teacherModel.getAll();
+};
 
 export const getById = async (id) => {
-    const [rows] = await pool.query('CALL pa_GetProfesorById(?)', [id]);
-    return rows[0][0];
-}
+  const result = await teacherModel.getById(id);
+  if (!result) {
+    throw new Error('Profesor no encontrado');
+  }
+  return result;
+};
 
 export const create = async (teacher) => {
-    if (!teacher) {
-        throw new Error('El profesor no puede estar vacío');
-    }   
-    const [result] = await pool.query('CALL pa_InsertProfesor (?,?,?)', [teacher.nombre, teacher.correo , teacher.especialidad]);
-    return { message: 'Profesor agregado exitosamente' };
-}
+  if (!teacher) {
+    throw new Error('El profesor no puede estar vacío');
+  }
+  await teacherModel.create(teacher);
+  return { message: 'Profesor agregado exitosamente' };
+};
 
 export const update = async (id, teacher) => {
-    if (!teacher) {
-        throw new Error('El profesor no puede estar vacío');
-    }
-    const [result] = await pool.query('CALL pa_UpdateProfesor (?,?,?,?)', [id , teacher.nombre ?? null, teacher.correo ?? null, teacher.especialidad ?? null]);
-    return { message: 'Profesor actualizado exitosamente' };
-}
+  if (!teacher) {
+    throw new Error('El profesor no puede estar vacío');
+  }
+  const result = await teacherModel.update(id, teacher);
+  if (result.affectedRows === 0) {
+    throw new Error('Profesor no encontrado');
+  }
+  return { message: 'Profesor actualizado exitosamente' };
+};
 
 export const deleteById = async (id) => {
-    const [result] = await pool.query('CALL pa_DeleteProfesor(?)', [id]);
-    if (result.affectedRows === 0) {
-        throw new Error('Profesor no encontrado');
-    }
-    return { message: 'Profesor eliminado exitosamente' };
-}
+  const result = await teacherModel.delete(id);
+  if (result.affectedRows === 0) {
+    throw new Error('Profesor no encontrado');
+  }
+  return { message: 'Profesor eliminado exitosamente' };
+};
 
 export const getScheduleByTeacher = async (nombre) => {
-    const [result] = await pool.query('CALL pa_GetHorariosByProfesor(?)', [nombre]);
-    return result[0];
+  return await teacherModel.getScheduleByTeacher(nombre);
 };
