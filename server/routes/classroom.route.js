@@ -9,7 +9,6 @@ import { allowRoles } from '../middlewares/roleMiddleware.js';
  *   description: Gestión de aulas
  */
 const router = express.Router();
-const types = ['laboratorio', 'aula'];
 
 /**
  * @swagger

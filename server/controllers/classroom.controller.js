@@ -1,4 +1,5 @@
 import * as classroomService from '../services/classroom.service.js';
+const types = ['laboratorio', 'aula'];
 
 const getAllClassrooms = async (req, res) => {
     try {
