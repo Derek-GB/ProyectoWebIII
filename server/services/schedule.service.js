@@ -1,4 +1,4 @@
-import scheduleModel from '../modules/schedule.model.js';
+import scheduleModel from '../models/schedule.model.js';
 
 const isValidId = (id) => id && Number.isInteger(Number(id)) && Number(id) > 0;
 const isValidTime = (time) => /^([01]\d|2[0-3]):[0-5]\d$/.test(time);
