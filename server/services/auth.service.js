@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { validateCredentials } from './user.service.js';
+import authModel from '../models/auth.model.js';
 
 export const login = async (name, password) => {
-  const user = await validateCredentials(name, password);
+  const user = await authModel.authenticate(name, password);
   if (!user) throw new Error('Credenciales inválidas');
 
   const token = jwt.sign(

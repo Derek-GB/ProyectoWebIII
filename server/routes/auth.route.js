@@ -1,5 +1,5 @@
 import express from 'express';
-import { login } from '../services/auth.service.js';
+import * as authController from '../controllers/auth.controller.js';
 import rateLimit from 'express-rate-limit';
 
 /**
@@ -49,14 +49,6 @@ const loginLimiter = rateLimit({
  *       429:
  *         description: Demasiados intentos de inicio de sesión
  */
-router.post('/login', loginLimiter, async (req, res) => {
-  const { name, password } = req.body; 
-  try {
-    const result = await login(name, password);
-    res.json(result);
-  } catch (err) {
-    res.status(401).json({ error: err.message });
-  }
-});
+router.post('/login', loginLimiter, authController.login);
 
 export default router;
