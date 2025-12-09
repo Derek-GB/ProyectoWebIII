@@ -1,4 +1,4 @@
-import InventoryService from '../services/inventory.service.js';
+import * as InventoryService from '../services/inventory.service.js';
 
 const getAllInventories = async (req, res) => {
     try {
