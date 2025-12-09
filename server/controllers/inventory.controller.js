@@ -15,7 +15,7 @@ const getInventoryById = async (req, res) => {
         return res.status(400).json({ error: 'ID del inventario es requerido' });
     }
     try {
-        const inventory = await inventoryService.getById(req.params.id);
+        const inventory = await InventoryService.getById(req.params.id);
         res.status(200).json(inventory);
     } catch (err) {
         console.error('Error en consulta:', err);
@@ -28,7 +28,7 @@ const postInventory = async (req, res) => {
         return res.status(400).json({ error: 'Datos incompletos para crear el inventario' });
     }
     try {
-        const newInventory = await inventoryService.create({classroomId: req.body.classroomId, teamName: req.body.teamName, description: req.body.description, quantity: req.body.quantity});
+        const newInventory = await InventoryService.create({classroomId: req.body.classroomId, teamName: req.body.teamName, description: req.body.description, quantity: req.body.quantity});
         res.status(201).json(newInventory);
     } catch (err) {
         console.error('Error al insertar:', err);
@@ -46,7 +46,7 @@ const putInventory = async (req, res) => {
     const { classroomId, teamName, description, quantity } = req.body;
     if (classroomId || teamName || description || quantity) {
         try {
-            const updatedInventory = await inventoryService.update(req.params.id, { classroomId, teamName, description, quantity });
+            const updatedInventory = await InventoryService.update(req.params.id, { classroomId, teamName, description, quantity });
             res.status(200).json(updatedInventory);
         } catch (err) {
             console.error('Error al actualizar:', err);
@@ -62,7 +62,7 @@ const deleteInventoryById = async (req, res) => {
         return res.status(400).json({ error: 'ID del inventario es requerido' });
     }
     try {
-        const result = await inventoryService.deleteById(req.params.id);
+        const result = await InventoryService.deleteById(req.params.id);
         res.status(200).json(result);
     } catch (err) {
         console.error('Error al eliminar:', err);
