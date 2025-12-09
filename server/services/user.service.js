@@ -26,7 +26,6 @@ export const create = async (user) => {
 };
 
 export const validateCredentials = async (name, password) => {
-  // Keep validation in service (used by auth). Use model to fetch user by name.
   const user = await userModel.getByName(name);
   if (!user) return null;
   const valid = await bcrypt.compare(password, user.passwordHash);
