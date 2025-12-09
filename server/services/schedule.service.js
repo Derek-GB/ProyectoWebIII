@@ -1,23 +1,22 @@
-import pool from './db.js'; 
+import scheduleModel from '../modules/schedule.model.js';
 
 const isValidId = (id) => id && Number.isInteger(Number(id)) && Number(id) > 0;
 const isValidTime = (time) => /^([01]\d|2[0-3]):[0-5]\d$/.test(time);
 const isValidDayOfWeek = (day) => ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo','Miercoles','Sabado','lunes','martes','miércoles','jueves','viernes','sábado','domingo','miercoles','sabado'].includes(day);
 
 export const getAll = async () => {
-  const [rows] = await pool.query('SELECT * FROM vwGetAllHorario');  
-  return rows || [];
+  return await scheduleModel.getAll();
 };
 
 export const getById = async (id) => {
   if (!isValidId(id)) {
     throw new Error('ID de horario inválido. Debe ser un número entero positivo');
   }
-  const [rows] = await pool.query('CALL pa_GetHorarioById(?)', [id]);  
-  if (!rows || !rows[0] || !rows[0][0]) {
+  const result = await scheduleModel.getById(id);
+  if (!result) {
     throw new Error('Horario no encontrado');
   }
-  return rows[0][0];
+  return result;
 };
 
 export const create = async (schedule) => {
@@ -46,9 +45,8 @@ export const create = async (schedule) => {
     throw new Error('Curso no válido. Debe ser una cadena no vacía');
   }
   
-  const [result] = await pool.query('CALL pa_InsertHorario(?,?,?,?,?,?)', [schedule.aula_id, schedule.profesor_id, schedule.dia_semana, schedule.hora_inicio, schedule.hora_fin, schedule.curso]);
+  await scheduleModel.create(schedule);
   return { message: 'Horario agregado exitosamente' };
-
 };
 
 export const update = async (id, schedule) => {
@@ -74,7 +72,7 @@ export const update = async (id, schedule) => {
     throw new Error('Hora de fin inválida. Formato requerido: HH:mm');
   }
   
-  const [result] = await pool.query('CALL pa_UpdateHorario(?,?,?,?,?,?)', [id, schedule.aula_id ?? null, schedule.profesor_id ?? null, schedule.dia_semana ?? null, schedule.hora_inicio ?? null, schedule.hora_fin ?? null]);
+  const result = await scheduleModel.update(id, schedule);
   if (result.affectedRows === 0) {
     throw new Error('Horario no encontrado');
   }
@@ -85,7 +83,7 @@ export const deleteById = async (id) => {
   if (!isValidId(id)) {
     throw new Error('ID de horario inválido. Debe ser un número entero positivo');
   }
-  const [result] = await pool.query('CALL pa_DeleteHorario(?)', [id]);
+  const result = await scheduleModel.delete(id);
   if (result.affectedRows === 0) {
     throw new Error('Horario no encontrado');
   }
@@ -103,8 +101,7 @@ export const getScheduleByTeacherAndDay = async (teacher,day,hour) => {
     throw new Error('Hora inválida. Formato requerido: HH:mm');
   }
   
-  const [rows] = await pool.query('CALL pa_SelectHorarioPorProfesorYDia(?,?,?)', [teacher, day, hour]);  
-  return rows[0] || null;
+  return await scheduleModel.getScheduleByTeacherAndDay(teacher, day, hour);
 };
 
 export const getScheduleByCourseAndDay = async (course,day,hour) => {
@@ -118,8 +115,7 @@ export const getScheduleByCourseAndDay = async (course,day,hour) => {
     throw new Error('Hora inválida. Formato requerido: HH:mm');
   }
   
-  const [rows] = await pool.query('CALL pa_SelectHorarioPorCursoYDia(?,?,?)', [course, day, hour]);  
-  return rows[0] || null;
+  return await scheduleModel.getScheduleByCourseAndDay(course, day, hour);
 };
 
 export const getClassByCourseAndDay = async (teacher,numberClass,typeClass) => {
@@ -133,8 +129,7 @@ export const getClassByCourseAndDay = async (teacher,numberClass,typeClass) => {
     throw new Error('Tipo de aula no válido. Debe ser una cadena no vacía');
   }
   
-  const [rows] = await pool.query('CALL pa_SelectHorarioPorProfesorYAula(?,?,?)', [teacher, numberClass, typeClass]);  
-  return rows[0] || null;
+  return await scheduleModel.getClassByCourseAndDay(teacher, numberClass, typeClass);
 };
 
 export const getTeacherByClassAndDay = async (numberClass,typeClass,day,hour) => {
@@ -151,15 +146,14 @@ export const getTeacherByClassAndDay = async (numberClass,typeClass,day,hour) =>
     throw new Error('Hora inválida. Formato requerido: HH:mm');
   }
   
-  const [rows] = await pool.query('CALL pa_SelectProfesorEnAulaPorHora(?,?,?,?)', [numberClass, typeClass, day, hour]);  
-  return rows[0] || null;
+  return await scheduleModel.getTeacherByClassAndDay(numberClass, typeClass, day, hour);
 }; 
 
 export const deleteAll = async (verification) => {
   if (!verification || typeof verification !== 'string' || verification.toLowerCase() !== 'si') {
     return { message: 'No se borrará nada. Envía "si" como parámetro para confirmar el borrado.' };
   }
-  const [result] = await pool.query('CALL pa_DeleteAllHorario()');
+  const result = await scheduleModel.deleteAll();
   if (result.affectedRows === 0) {
     throw new Error('No se eliminaron registros');
   }
