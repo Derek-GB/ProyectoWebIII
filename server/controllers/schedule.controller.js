@@ -21,7 +21,7 @@ export const getById = async (req, res) => {
     if (err && err.message === 'Horario no encontrado') {
       return res.status(404).json({ error: err.message });
     }
-    if (err && err.message && err.message.toLowerCase().includes('id de horario inválido')) {
+    if (err && err.message && (err.message.toLowerCase().includes('inválido') || err.message.includes('Debe ser'))) {
       return res.status(400).json({ error: err.message });
     }
     console.error('Error en consulta:', err);
@@ -34,12 +34,11 @@ export const create = async (req, res) => {
     const newSchedule = await scheduleService.create(req.body);
     res.status(201).json(newSchedule);
   } catch (err) {
-    if (err.message === 'El horario no puede estar vacío') {
-      res.status(400).json({ error: err.message });
-    } else {
-      console.error('Error al insertar:', err);
-      res.status(500).json({ error: 'Error al agregar horario' });
+    if (err.message === 'El horario no puede estar vacío' || err.message.includes('inválido') || err.message.includes('Formato') || err.message.includes('Debe ser') ||err.message.includes('no válido')) {
+      return res.status(400).json({ error: err.message });
     }
+    console.error('Error al insertar:', err);
+    res.status(500).json({ error: 'Error al agregar horario' });
   }
 };
 
@@ -50,13 +49,13 @@ export const update = async (req, res) => {
     res.json(updatedSchedule);
   } catch (err) {
     if (err.message === 'Horario no encontrado') {
-      res.status(404).json({ error: err.message });
-    } else if (err.message.includes('proporcionar')) {
-      res.status(400).json({ error: err.message });
-    } else {
-      console.error('Error al actualizar:', err);
-      res.status(500).json({ error: 'Error al actualizar horario' });
+      return res.status(404).json({ error: err.message });
     }
+    if (err.message.includes('inválido') || err.message.includes('Formato') || err.message.includes('Debe ser') || err.message.includes('no válido') || err.message.includes('proporcionar')) {
+      return res.status(400).json({ error: err.message });
+    }
+    console.error('Error al actualizar:', err);
+    res.status(500).json({ error: 'Error al actualizar horario' });
   }
 };
 
@@ -84,6 +83,9 @@ export const getScheduleByTeacherAndDay = async (req, res) => {
     }
     res.status(200).json(schedule);
   } catch (err) {
+    if (err && err.message && (err.message.includes('inválido') || err.message.includes('Formato') || err.message.includes('Debe ser'))) {
+      return res.status(400).json({ error: err.message });
+    }
     console.error('Error en consulta:', err);
     res.status(500).json({ error: 'Error en la base de datos' });
   }
@@ -98,6 +100,9 @@ export const getScheduleByCourseAndDay = async (req, res) => {
     }
     res.status(200).json(schedule);
   } catch (err) {
+    if (err && err.message && (err.message.includes('inválido') || err.message.includes('Formato') || err.message.includes('Debe ser'))) {
+      return res.status(400).json({ error: err.message });
+    }
     console.error('Error en consulta:', err);
     res.status(500).json({ error: 'Error en la base de datos' });
   }
@@ -112,6 +117,9 @@ export const getClassByCourseAndDay = async (req, res) => {
     }
     res.status(200).json(schedule);
   } catch (err) {
+    if (err && err.message && (err.message.includes('inválido') || err.message.includes('Formato') || err.message.includes('Debe ser'))) {
+      return res.status(400).json({ error: err.message });
+    }
     console.error('Error en consulta:', err);
     res.status(500).json({ error: 'Error en la base de datos' });
   }
@@ -126,6 +134,9 @@ export const getTeacherByClassAndDay = async (req, res) => {
     }
     res.status(200).json(schedule);
   } catch (err) {
+    if (err && err.message && (err.message.includes('inválido') || err.message.includes('Formato') || err.message.includes('Debe ser'))) {
+      return res.status(400).json({ error: err.message });
+    }
     console.error('Error en consulta:', err);
     res.status(500).json({ error: 'Error en la base de datos' });
   }
